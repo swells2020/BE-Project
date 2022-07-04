@@ -4,8 +4,8 @@ const db = require('../db/connection');
 const data = require('../db/data/test-data/index');
 const seed = require('../db/seeds/seed');
 
-beforeAll(() => {
-    return seed(data).then();
+beforeEach(() => {
+    return seed(data);
 })
 
 afterAll(() => {
@@ -13,13 +13,7 @@ afterAll(() => {
 });
 
 describe('app', () => {
-    test('tests the server connection', () => {
-        return request(app)
-            .get('/api')
-            .expect(200)
-            .then();
-    })
-    test('tests the database connection', () => {
+    test('tests the server and database connection', () => {
         return request(app)
             .get('/api')
             .expect(200)
