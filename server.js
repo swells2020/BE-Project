@@ -13,4 +13,8 @@ app.use('*', (request, response) => {
     response.status(404).send({ message: '404: invalid path' });
 })
 
+app.use((error, request, response, next) => {
+    response.status(500).send({ message: '500: server error' })
+})
+
 module.exports = app;
