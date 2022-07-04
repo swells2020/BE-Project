@@ -9,8 +9,6 @@ exports.getApi = (request, response) => {
 
 exports.getTopics = (request, response) => {
     fetchTopics().then(({ rows }) => {
-
-        console.log(rows);
         response.send({ rows });
     })
 };
