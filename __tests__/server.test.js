@@ -37,4 +37,24 @@ describe('app', () => {
                 expect(response.body).toEqual({ message: '404: invalid path' })
             })
     })
+    describe('GET /api/topics', () => {
+        test('tests the connection to the /api/topics endpoint', () => {
+            return request(app)
+                .get('/api/topics')
+                .expect(200)
+                .then(({ body: { rows } }) => {
+                    const testArray = [];
+                    expect(rows.length).toBe(3);
+                    rows.forEach(row =>
+                        testArray.push([row.slug, row.description])
+                    )
+                    expect(testArray[0].includes('The man, the Mitch, the legend')).toBe(true)
+                    expect(testArray[0].includes('mitch')).toBe(true)
+                    expect(testArray[1].includes('Not dogs')).toBe(true)
+                    expect(testArray[1].includes('cats')).toBe(true)
+                    expect(testArray[2].includes('what books are made of')).toBe(true)
+                    expect(testArray[2].includes('paper')).toBe(true)
+                })
+        })
+    })
 });
