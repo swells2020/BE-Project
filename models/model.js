@@ -11,4 +11,13 @@ exports.fetchApi = () => {
     AND
         schemaname != 'information_schema';
     `)
-}
+};
+
+exports.fetchTopics = () => {
+    return db.query(`
+    SELECT
+        *
+    FROM
+        topics;
+    `)
+};
