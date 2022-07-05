@@ -1,4 +1,4 @@
-const { fetchApi, fetchArticlesById } = require("../models/model");
+const { fetchApi, fetchArticlesById, fetchTopics } = require("../models/model");
 const { checkParametricValue, checkParametricFormat } = require("../models/utils");
 
 
@@ -10,6 +10,15 @@ exports.getApi = (request, response) => {
         .catch((error) => {
             next(error);
         })
+};
+
+exports.getTopics = (request, response) => {
+    fetchTopics().then(({ rows }) => {
+        response.send({ rows });
+    })
+    .catch((error) => {
+        next(error);
+    })
 };
 
 exports.getArticleById = (request, response, next) => {

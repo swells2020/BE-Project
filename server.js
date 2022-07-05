@@ -1,11 +1,13 @@
 const express = require('express');
-const { getApi, getArticleById } = require('./controllers/controller');
+const { getApi, getTopics, getArticleById } = require('./controllers/controller');
 
 const app = express();
 
 app.use(express.json());
 
 app.get('/api', getApi);
+
+app.get('/api/topics', getTopics)
 
 app.get('/api/articles/:article_id', getArticleById);
 
@@ -19,7 +21,6 @@ app.use((error, request, response, next) => {
     const { status, message } = error;
     if (status) {
         response.status(status).send({ message });
-     
     } else {
         next(error);
     }
