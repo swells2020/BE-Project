@@ -1,10 +1,9 @@
-const request = require('supertest')
+const request = require('supertest');
+const format = require('pg-format');
 const app = require('../server');
 const db = require('../db/connection');
 const data = require('../db/data/test-data/index');
 const seed = require('../db/seeds/seed');
-const { convertTimestampToDate } = require('../db/helpers/utils');
-const { response } = require('../server');
 
 beforeEach(() => {
     return seed(data);
@@ -100,3 +99,32 @@ describe('GET /api/articles/:article_id', () => {
             })
     })
 });
+// describe('PATCH /api/articles/:article_id', () => {
+//     test.only('tests the connection to the PATCH /api/articles/:article_id parametric endpoint', () => {
+//         const patchData = { votes : 'up' };
+//         return request(app)
+//             .patch('/api/articles/1')
+//             .send(patchData)
+//             .expect(200)
+//             .then(() => {
+//                 return db
+//                     .query(`
+//                     SELECT
+//                         votes
+//                     FROM
+//                         articles
+//                     WHERE
+//                         article_id=1
+//                     `)
+//             })
+//             .then(result => {
+//                 console.log(result);
+//             })
+//     })
+//     test('tests the error handling for bad parametric paths', () => {
+
+//     })
+//     test('tests the error handling for bad parametric requests', () => {
+
+//     })
+// })

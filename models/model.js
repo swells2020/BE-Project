@@ -36,3 +36,20 @@ exports.fetchArticlesById = (article_id) => {
             article_id=$1
         `, [article_id]);
 };
+
+exports.updateArticlesById = (article_id, entries) => {
+    const queryString = format(`
+        INSERT INTO
+            articles 
+        `)
+
+    return db
+        .query(`
+        SELECT 
+            *
+        FROM 
+            articles
+        WHERE
+            article_id=$1
+        `, [article_id]);
+}
