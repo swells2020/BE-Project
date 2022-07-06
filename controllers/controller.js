@@ -1,5 +1,5 @@
 const { fetchApi, fetchTopics, fetchArticlesById, updateArticlesById } = require("../models/model");
-const { checkParametricValue, checkParametricFormat } = require("../models/utils");
+const { checkParametricValue, checkParametricFormat, checkRequestBodyFormat } = require("../models/utils");
 
 exports.getApi = (request, response) => {
     fetchApi()
@@ -24,7 +24,7 @@ exports.getArticleById = (request, response, next) => {
     const { params: { article_id } } = request
 
     checkParametricFormat(article_id, 'article_id', 'articles')
-    .then(() => {
+        .then(() => {
             return checkParametricValue(article_id, 'article_id', 'articles')
         })
         .then(() => {
@@ -34,31 +34,28 @@ exports.getArticleById = (request, response, next) => {
             response.send({ article: rows[0] })
         })
         .catch((error) => {
-            if (error.status === 404) {
-                error.message = '404: article not found';
-                next(error);
-            } else {
-                next(error);
-            }
+            next(error);
         })
 };
 
 exports.patchArticleById = (request, response, next) => {
     const { params: { article_id }, body } = request
     const entries = Object.entries(body);
-    console.log(entries);
 
     checkParametricFormat(article_id, 'article_id', 'articles')
-    .then(() => {
-        return checkParametricValue(article_id, 'article_id', 'articles')
-    })
-    .then(() => {
-        return updateArticlesById(article_id, entries)
-    })
-    .then(({ rows }) => {
-        response.send({ rows })
-    })
-    .catch((error) => {
-        next(error);
-    })
+        .then(() => {
+            return checkParametricValue(article_id, 'article_id', 'articles')
+        })
+        .then(() => {
+            return checkRequestBodyFormat(article_id, entries, 'articles')
+        })
+        .then(() => {
+            return updateArticlesById(article_id, entries, 'articles')
+        })
+        .then((result) => {
+            response.send({ article: result.rows[0] })
+        })
+        .catch((error) => {
+            next(error);
+        })
 }
