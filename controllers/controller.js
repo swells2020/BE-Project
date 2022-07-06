@@ -14,11 +14,11 @@ exports.getApi = (request, response) => {
 
 exports.getTopics = (request, response) => {
     fetchTopics().then(({ rows }) => {
-        response.send({ rows });
+        response.send({ topics: rows });
     })
-    .catch((error) => {
-        next(error);
-    })
+        .catch((error) => {
+            next(error);
+        })
 };
 
 exports.getArticleById = (request, response, next) => {
@@ -31,9 +31,14 @@ exports.getArticleById = (request, response, next) => {
             return fetchArticlesById(article_id)
         })
         .then(({ rows }) => {
-            response.send({ rows })
+            response.send({ article: rows[0] })
         })
         .catch((error) => {
-            next(error);
+            if (error.status === 404) {
+                error.message = '404: article not found';
+                next(error);
+            } else {
+                next(error);
+            }
         })
 };
