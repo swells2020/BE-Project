@@ -44,11 +44,11 @@ describe('GET /api/topics', () => {
         return request(app)
             .get('/api/topics')
             .expect(200)
-            .then(({ body: { rows } }) => {
+            .then(({ body: { topics } }) => {
                 const testArray = [];
-                expect(rows.length).toBe(3);
-                rows.forEach(row =>
-                    testArray.push([row.slug, row.description])
+                expect(topics.length).toBe(3);
+                topics.forEach(topic =>
+                    testArray.push([topic.slug, topic.description])
                 )
                 expect(testArray[0].includes('The man, the Mitch, the legend')).toBe(true)
                 expect(testArray[0].includes('mitch')).toBe(true)
@@ -73,13 +73,13 @@ describe('GET /api/articles/:article_id', () => {
         return request(app)
             .get('/api/articles/1')
             .expect(200)
-            .then(({ body: { rows } }) => {
-                expect(rows[0].article_id).toEqual(1)
-                expect(rows[0].title).toEqual(testObject1.title)
-                expect(rows[0].topic).toEqual(testObject1.topic)
-                expect(rows[0].author).toEqual(testObject1.author)
-                expect(rows[0].body).toEqual(testObject1.body)
-                expect(rows[0].votes).toEqual(testObject1.votes)
+            .then(({ body: { article } }) => {
+                expect(article.article_id).toEqual(1)
+                expect(article.title).toEqual(testObject1.title)
+                expect(article.topic).toEqual(testObject1.topic)
+                expect(article.author).toEqual(testObject1.author)
+                expect(article.body).toEqual(testObject1.body)
+                expect(article.votes).toEqual(testObject1.votes)
             })
     })
     test('tests the error handling for bad parametric paths', () => {
@@ -87,7 +87,7 @@ describe('GET /api/articles/:article_id', () => {
             .get('/api/articles/13')
             .expect(404)
             .then(({ body: { message } }) => {
-                expect(message).toBe('404: invalid path');
+                expect(message).toBe('404: article not found');
             })
     })
     test('tests the error handling for bad parametric requests', () => {
