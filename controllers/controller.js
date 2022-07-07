@@ -1,5 +1,5 @@
 const { fetchApi, fetchTopics, fetchArticlesById, updateArticlesById } = require("../models/model");
-const { checkParametricValue, checkParametricFormat, checkRequestBodyFormat } = require("../models/utils");
+const { checkParametricFormat, checkRequestBodyFormat } = require("../models/utils");
 
 exports.getApi = (request, response) => {
     fetchApi()
@@ -25,9 +25,6 @@ exports.getArticleById = (request, response, next) => {
 
     checkParametricFormat(article_id, 'article_id', 'articles')
         .then(() => {
-            return checkParametricValue(article_id, 'article_id', 'articles')
-        })
-        .then(() => {
             return fetchArticlesById(article_id)
         })
         .then(({ rows }) => {
@@ -44,9 +41,6 @@ exports.patchArticleById = (request, response, next) => {
 
     checkParametricFormat(article_id, 'article_id', 'articles')
         .then(() => {
-            return checkParametricValue(article_id, 'article_id', 'articles')
-        })
-        .then(() => {
             return checkRequestBodyFormat(article_id, entries, 'articles')
         })
         .then(() => {
@@ -58,4 +52,4 @@ exports.patchArticleById = (request, response, next) => {
         .catch((error) => {
             next(error);
         })
-}
+};

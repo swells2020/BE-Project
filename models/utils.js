@@ -13,35 +13,22 @@ exports.checkParametricFormat = (value, column, table) => {
 
     return db
         .query(queryString)
-        .then(() => {
-            return Promise.resolve();
-        })
-        .catch((error) => {
-            return Promise.reject({ status: 400, message: '400: bad request - invalid parametric endpoint format' });
-        })
-}
-
-exports.checkParametricValue = (value, column, table) => {
-    const queryString = format(`
-    SELECT
-        %1$s
-    FROM
-        %2$s
-    `, column, table)
-    
-    return db
-        .query(queryString)
         .then(({ rows }) => {
-            const values = rows.map(row => {
-                return row.article_id.toString();
-            })
-            if (values.includes(value)) {
+            if (rows.length !== 0) {
                 return Promise.resolve();
             } else {
                 return Promise.reject({ status: 404, message: '404: parametric endpoint not found' })
             }
         })
-}
+        .catch((error) => {
+            console.log(error)
+            if (error.status === 404) {
+                return Promise.reject(error)
+            } else {
+                return Promise.reject({ status: 400, message: '400: bad request - invalid parametric endpoint format' });
+            }
+        })
+};
 
 exports.checkRequestBodyFormat = (value, entries, table) => {
     const queryString1 = format(`    
@@ -71,4 +58,4 @@ exports.checkRequestBodyFormat = (value, entries, table) => {
         .catch((error) => {
             return Promise.reject({ status: 400, message: '400: bad request - invalid data format' });
         })
-}
+};
