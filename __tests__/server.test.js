@@ -1,10 +1,8 @@
-const request = require('supertest')
+const request = require('supertest');
 const app = require('../server');
 const db = require('../db/connection');
 const data = require('../db/data/test-data/index');
 const seed = require('../db/seeds/seed');
-const { convertTimestampToDate } = require('../db/helpers/utils');
-const { response } = require('../server');
 
 beforeEach(() => {
     return seed(data);
@@ -36,7 +34,7 @@ describe('app', () => {
             .get('/invalid-path')
             .expect(404)
             .then(response => {
-                expect(response.body).toEqual({ message: '404: invalid path' })
+                expect(response.body).toEqual({ message: '404: path not found' })
             })
     })
 })
@@ -88,7 +86,7 @@ describe('GET /api/articles/:article_id', () => {
             .get('/api/articles/13')
             .expect(404)
             .then(({ body: { message } }) => {
-                expect(message).toBe('404: article not found');
+                expect(message).toBe('404: parametric endpoint not found');
             })
     })
     test('tests the error handling for bad parametric requests', () => {
@@ -96,7 +94,64 @@ describe('GET /api/articles/:article_id', () => {
             .get('/api/articles/thirteen')
             .expect(400)
             .then(({ body: { message } }) => {
-                expect(message).toBe('400: bad request');
+                expect(message).toBe('400: bad request - invalid parametric endpoint format');
             })
     })
 });
+describe('PATCH /api/articles/:article_id', () => {
+    test('tests the connection to the PATCH /api/articles/:article_id parametric endpoint', () => {
+        const patchData = { votes: 1 };
+        const result = {
+            article_id: 1,
+            title: 'Living in the shadow of a great man',
+            topic: 'mitch',
+            author: 'butter_bridge',
+            body: 'I find this existence challenging',
+            created_at: '2020-07-09T20:11:00.000Z',
+            votes: 101
+        }
+        return request(app)
+            .patch('/api/articles/1')
+            .send(patchData)
+            .expect(200)
+            .then(({ body: { article } }) => {
+                expect(article).toEqual(result);
+            })
+    })
+    test('tests the error handling for bad request body (invalid key)', () => {
+        const patchData = { votes: 'one' };
+        return request(app)
+            .patch('/api/articles/1')
+            .send(patchData)
+            .expect(400)
+            .then(({ body: { message } }) => {
+                expect(message).toBe('400: bad request - invalid data format');
+            })
+    })
+    test('tests the error handling for bad request body (invalid value)', () => {
+        const patchData = { votez: 1 };
+        return request(app)
+            .patch('/api/articles/1')
+            .send(patchData)
+            .expect(400)
+            .then(({ body: { message } }) => {
+                expect(message).toBe('400: bad request - invalid data format');
+            })
+    })
+    test('tests the error handling for bad parametric paths', () => {
+        return request(app)
+            .patch('/api/articles/13')
+            .expect(404)
+            .then(({ body: { message } }) => {
+                expect(message).toBe('404: parametric endpoint not found');
+            })
+    })
+    test('tests the error handling for bad parametric requests', () => {
+        return request(app)
+            .patch('/api/articles/thirteen')
+            .expect(400)
+            .then(({ body: { message } }) => {
+                expect(message).toBe('400: bad request - invalid parametric endpoint format');
+            })
+    })
+})
