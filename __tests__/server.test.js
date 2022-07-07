@@ -80,6 +80,23 @@ describe('GET /api/articles/:article_id', () => {
                 expect(article.body).toEqual(testObject1.body)
                 expect(article.votes).toEqual(testObject1.votes)
             })
+            
+    })
+    test('tests the new comment count property where comments exist', () => {
+        return request(app)
+            .get('/api/articles/1')
+            .expect(200)
+            .then(({ body: { article } }) => {
+                expect(article.comment_count).toEqual('11');
+            })
+    })
+    test('tests the new comment count property where comments do not exist', () => {
+        return request(app)
+            .get('/api/articles/2')
+            .expect(200)
+            .then(({ body: { article } }) => {
+                expect(article.comment_count).toEqual('0');
+            })
     })
     test('tests the error handling for bad parametric paths', () => {
         return request(app)

@@ -29,13 +29,22 @@ exports.fetchArticlesById = (article_id) => {
     return db
         .query(`
         SELECT 
-            *
+            articles.*, COUNT(comment_id) as comment_count
         FROM 
             articles
-        WHERE
-            article_id=$1
+        LEFT JOIN 
+            comments ON comments.article_id=articles.article_id
+        WHERE 
+            articles.article_id=$1
+        GROUP BY
+            articles.article_id
         `, [article_id]);
 };
+
+// SELECT animals.*, COUNT(northcoder_id) AS number_of_fans
+// FROM animals
+// LEFT JOIN northcoders ON northcoders.favourite_animal_id = animals.animal_id
+// GROUP BY animal_id;
 
 exports.updateArticlesById = (article_id, entries) => {
     const keys = entries[0][0];
