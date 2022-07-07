@@ -3,8 +3,6 @@ const app = require('../server');
 const db = require('../db/connection');
 const data = require('../db/data/test-data/index');
 const seed = require('../db/seeds/seed');
-const { convertTimestampToDate } = require('../db/helpers/utils');
-const { response } = require('../server');
 
 beforeEach(() => {
     return seed(data);
@@ -70,7 +68,6 @@ describe('GET /api/articles/:article_id', () => {
             created_at: 1594329060000,
             votes: 100,
         };
-
         return request(app)
             .get('/api/articles/1')
             .expect(200)
@@ -99,4 +96,34 @@ describe('GET /api/articles/:article_id', () => {
                 expect(message).toBe('400: bad request');
             })
     })
-});
+})
+describe.skip('GET /api/users', () => {
+    test('tests the connection to the GET /api/users endpoint', () => {
+        return request(app)
+            .get('/api/users')
+            .expect(200)
+            .then(({ body: { users } }) => {
+                const testArray = [];
+                expect(users.length).toBe(4);
+                users.forEach(user =>
+                    testArray.push([user.user_id, user.username, user.name, user.avatar_url])
+                )
+                expect(testArray[0].includes(1)).toBe(true)
+                expect(testArray[0].includes('butter_bridge')).toBe(true)
+                expect(testArray[0].includes('jonny')).toBe(true)
+                expect(testArray[0].includes('https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg')).toBe(true)
+                expect(testArray[1].includes(2)).toBe(true)
+                expect(testArray[1].includes('icellusedkars')).toBe(true)
+                expect(testArray[1].includes('sam')).toBe(true)
+                expect(testArray[1].includes('https://avatars2.githubusercontent.com/u/24604688?s=460&v=4')).toBe(true)
+                expect(testArray[2].includes(3)).toBe(true)
+                expect(testArray[2].includes('rogersop')).toBe(true)
+                expect(testArray[2].includes('jonny')).toBe(true)
+                expect(testArray[2].includes('https://avatars2.githubusercontent.com/u/24394918?s=400&v=4')).toBe(true)
+                expect(testArray[3].includes(4)).toBe(true)
+                expect(testArray[3].includes('lurker')).toBe(true)
+                expect(testArray[3].includes('do_nothing')).toBe(true)
+                expect(testArray[3].includes('https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg')).toBe(true)
+            })
+    })
+})
