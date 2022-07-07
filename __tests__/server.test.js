@@ -166,16 +166,36 @@ describe('GET /api/articles', () => {
                 articles.forEach(article =>
                     testArray.push([article.title, article.topic, article.author, article.body, article.votes])
                 )
-                expect(testArray[0].includes('Living in the shadow of a great man')).toBe(true)
-                expect(testArray[0].includes('mitch')).toBe(true)
-                expect(testArray[0].includes('butter_bridge')).toBe(true)
-                expect(testArray[0].includes('I find this existence challenging')).toBe(true)
-                expect(testArray[0].includes(100)).toBe(true)
-                expect(testArray[11].includes('Moustache')).toBe(true)
-                expect(testArray[11].includes('mitch')).toBe(true)
-                expect(testArray[11].includes('butter_bridge')).toBe(true)
-                expect(testArray[11].includes('Have you seen the size of that thing?')).toBe(true)
-                expect(testArray[11].includes(0)).toBe(true)
+                expect(testArray.length).toBe(12);
             })
     })
+    test('tests the new comment count property where comments exist', () => {
+        return request(app)
+            .get('/api/articles')
+            .expect(200)
+            .then(({ body: { articles } }) => {
+                const testArray = [];
+                expect(articles.length).toBe(12);
+                articles.forEach(article =>
+                    testArray.push([article.comment_count])
+                )
+                expect(testArray.length).toBe(12);
+            })
+        })
+        test('tests the new sort by created_at descending option where comments exist', () => {
+            return request(app)
+                .get('/api/articles')
+                .expect(200)
+                .then(({ body: { articles } }) => {
+                    const testArray = [];
+                    expect(articles.length).toBe(12);
+                    articles.forEach(article =>
+                        testArray.push([article.created_at])
+                    )
+                    console.log(testArray)
+                    expect(testArray.length).toBe(12);
+                    expect(testArray[0][0]).toBe('2020-11-03T09:12:00.000Z');
+                    expect(testArray[11][0]).toBe('2020-01-07T14:08:00.000Z');
+                })
+            })
 })
