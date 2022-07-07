@@ -29,12 +29,26 @@ exports.fetchArticlesById = (article_id) => {
     return db
         .query(`
         SELECT 
-            *
+            articles.*, COUNT(comment_id) as comment_count
         FROM 
             articles
-        WHERE
-            article_id=$1
+        LEFT JOIN 
+            comments ON comments.article_id=articles.article_id
+        WHERE 
+            articles.article_id=$1
+        GROUP BY
+            articles.article_id
         `, [article_id]);
+};
+
+exports.fetchUsers = () => {
+    return db
+        .query(`
+        SELECT
+            *
+        FROM
+            users;
+        `)
 };
 
 exports.updateArticlesById = (article_id, entries) => {

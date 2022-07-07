@@ -1,4 +1,4 @@
-const { fetchApi, fetchTopics, fetchArticlesById, updateArticlesById, fetchArticles } = require("../models/model");
+const { fetchApi, fetchTopics, fetchArticlesById, updateArticlesById, fetchUsers, fetchArticles } = require("../models/model");
 const { checkParametricFormat, checkRequestBodyFormat } = require("../models/utils");
 
 exports.getApi = (request, response, next) => {
@@ -60,7 +60,15 @@ exports.getArticles = (request, response, next) => {
             response.send({ articles: rows });
         })
         .catch((error) => {
-            console.log(error)
+            next(error);
+        })
+};
+
+exports.getUsers = (request, response, next) => {
+    fetchUsers().then(({ rows }) => {
+        response.send({ users: rows });
+    })
+        .catch((error) => {
             next(error);
         })
 };
