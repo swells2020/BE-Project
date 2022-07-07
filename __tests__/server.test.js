@@ -208,7 +208,6 @@ describe('GET /api/articles', () => {
                     articles.forEach(article =>
                         testArray.push([article.created_at])
                     )
-                    console.log(testArray)
                     expect(testArray.length).toBe(12);
                     expect(testArray[0][0]).toBe('2020-11-03T09:12:00.000Z');
                     expect(testArray[11][0]).toBe('2020-01-07T14:08:00.000Z');
