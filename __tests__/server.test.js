@@ -180,7 +180,7 @@ describe('GET /api/articles', () => {
                 const testArray = [];
                 expect(articles.length).toBe(12);
                 articles.forEach(article =>
-                    testArray.push([article.title, article.topic, article.author, article.body, article.votes])
+                    testArray.push([article.title, article.topic, article.author, article.votes])
                 )
                 expect(testArray.length).toBe(12);
             })
