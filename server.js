@@ -32,7 +32,6 @@ app.use((error, request, response, next) => {
 
 // 500 error handler
 app.use((error, request, response, next) => {
-    console.log('shouldn\'t be here')
     response.status(500).send({ message: '500: server error' })
 })
 
