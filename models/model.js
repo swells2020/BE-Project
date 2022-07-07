@@ -41,10 +41,15 @@ exports.fetchArticlesById = (article_id) => {
         `, [article_id]);
 };
 
-// SELECT animals.*, COUNT(northcoder_id) AS number_of_fans
-// FROM animals
-// LEFT JOIN northcoders ON northcoders.favourite_animal_id = animals.animal_id
-// GROUP BY animal_id;
+exports.fetchUsers = () => {
+    return db
+        .query(`
+        SELECT
+            *
+        FROM
+            users;
+        `)
+};
 
 exports.updateArticlesById = (article_id, entries) => {
     const keys = entries[0][0];
@@ -62,4 +67,4 @@ exports.updateArticlesById = (article_id, entries) => {
     return db
         .query(queryString)
 
-}
+};
