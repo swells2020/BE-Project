@@ -37,6 +37,16 @@ exports.fetchArticlesById = (article_id) => {
         `, [article_id]);
 };
 
+exports.fetchUsers = () => {
+    return db
+        .query(`
+        SELECT
+            *
+        FROM
+            users;
+        `)
+};
+
 exports.updateArticlesById = (article_id, entries) => {
     const keys = entries[0][0];
     const values = entries[0][1];
@@ -53,4 +63,4 @@ exports.updateArticlesById = (article_id, entries) => {
     return db
         .query(queryString)
 
-}
+};
