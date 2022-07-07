@@ -79,7 +79,6 @@ describe('GET /api/articles/:article_id', () => {
                 expect(article.body).toEqual(testObject1.body)
                 expect(article.votes).toEqual(testObject1.votes)
             })
-            
     })
     test('tests the new comment count property where comments exist', () => {
         return request(app)
@@ -240,3 +239,41 @@ describe('GET /api/users', () => {
             })
     })
 });
+describe('GET /api/articles/:article_id/comments', () => {
+    test('tests the connection to the GET /api/articles/:article_id/comments endpoint where comments exist', () => {
+        return request(app)
+        .get('/api/articles/1/comments')
+        .expect(200)
+        .then(({ body: { comments } }) => {
+            const erroneousIds = comments.filter(comment => {
+                comment.article_id !== 1
+            })
+            expect(comments.length).toBe(11);
+            expect(erroneousIds.length).toBe(0);
+        })
+    })
+    test('tests the connection to the GET /api/articles/:article_id/comments endpoint where no comments exist', () => {
+        return request(app)
+        .get('/api/articles/2/comments')
+        .expect(200)
+        .then(({ body: { comments } }) => {
+            expect(comments.length).toBe(0);
+        })
+    })
+    test('tests the error handling for bad parametric paths', () => {
+        return request(app)
+            .get('/api/articles/13/comments')
+            .expect(404)
+            .then(({ body: { message } }) => {
+                expect(message).toBe('404: parametric endpoint not found');
+            })
+    })
+    test('tests the error handling for bad parametric requests', () => {
+        return request(app)
+            .get('/api/articles/thirteen/comments')
+            .expect(400)
+            .then(({ body: { message } }) => {
+                expect(message).toBe('400: bad request - invalid parametric endpoint format');
+            })
+    })
+})
