@@ -155,3 +155,27 @@ describe('PATCH /api/articles/:article_id', () => {
             })
     })
 })
+describe('GET /api/articles', () => {
+    test('tests the connection to the GET /api/articles endpoint', () => {
+        return request(app)
+            .get('/api/articles')
+            .expect(200)
+            .then(({ body: { articles } }) => {
+                const testArray = [];
+                expect(articles.length).toBe(12);
+                articles.forEach(article =>
+                    testArray.push([article.title, article.topic, article.author, article.body, article.votes])
+                )
+                expect(testArray[0].includes('Living in the shadow of a great man')).toBe(true)
+                expect(testArray[0].includes('mitch')).toBe(true)
+                expect(testArray[0].includes('butter_bridge')).toBe(true)
+                expect(testArray[0].includes('I find this existence challenging')).toBe(true)
+                expect(testArray[0].includes(100)).toBe(true)
+                expect(testArray[11].includes('Moustache')).toBe(true)
+                expect(testArray[11].includes('mitch')).toBe(true)
+                expect(testArray[11].includes('butter_bridge')).toBe(true)
+                expect(testArray[11].includes('Have you seen the size of that thing?')).toBe(true)
+                expect(testArray[11].includes(0)).toBe(true)
+            })
+    })
+})

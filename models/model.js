@@ -54,3 +54,13 @@ exports.updateArticlesById = (article_id, entries) => {
         .query(queryString)
 
 }
+
+exports.fetchArticles = () => {
+    return db
+        .query(`
+        SELECT
+            *
+        FROM
+            articles;
+        `)
+};

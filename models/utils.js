@@ -21,7 +21,6 @@ exports.checkParametricFormat = (value, column, table) => {
             }
         })
         .catch((error) => {
-            console.log(error)
             if (error.status === 404) {
                 return Promise.reject(error)
             } else {
