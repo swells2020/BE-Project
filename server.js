@@ -1,5 +1,5 @@
 const express = require('express');
-const { getApi, getTopics, getArticleById } = require('./controllers/controller');
+const { getApi, getTopics, getArticleById, getUsers } = require('./controllers/controller');
 
 const app = express();
 
@@ -7,9 +7,11 @@ app.use(express.json());
 
 app.get('/api', getApi);
 
-app.get('/api/topics', getTopics)
+app.get('/api/topics', getTopics);
 
 app.get('/api/articles/:article_id', getArticleById);
+
+app.get('/api/users', getUsers);
 
 // Bad path error handler
 app.use('*', (request, response) => {
