@@ -36,3 +36,13 @@ exports.fetchArticlesById = (article_id) => {
             article_id=$1
         `, [article_id]);
 };
+
+exports.fetchUsers = () => {
+    return db
+        .query(`
+        SELECT
+            *
+        FROM
+            users;
+        `)
+};
