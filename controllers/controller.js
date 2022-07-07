@@ -1,7 +1,7 @@
-const { fetchApi, fetchTopics, fetchArticlesById, updateArticlesById, fetchUsers } = require("../models/model");
+const { fetchApi, fetchTopics, fetchArticlesById, updateArticlesById, fetchUsers, fetchArticles } = require("../models/model");
 const { checkParametricFormat, checkRequestBodyFormat } = require("../models/utils");
 
-exports.getApi = (request, response) => {
+exports.getApi = (request, response, next) => {
     fetchApi()
         .then(({ rows }) => {
             response.send({ rows });
@@ -11,7 +11,7 @@ exports.getApi = (request, response) => {
         })
 };
 
-exports.getTopics = (request, response) => {
+exports.getTopics = (request, response, next) => {
     fetchTopics().then(({ rows }) => {
         response.send({ topics: rows });
     })
@@ -54,7 +54,17 @@ exports.patchArticleById = (request, response, next) => {
         })
 };
 
-exports.getUsers = (request, response) => {
+exports.getArticles = (request, response, next) => {
+    fetchArticles()
+        .then(({ rows }) => {
+            response.send({ articles: rows });
+        })
+        .catch((error) => {
+            next(error);
+        })
+};
+
+exports.getUsers = (request, response, next) => {
     fetchUsers().then(({ rows }) => {
         response.send({ users: rows });
     })

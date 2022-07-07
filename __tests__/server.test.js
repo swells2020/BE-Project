@@ -171,6 +171,49 @@ describe('PATCH /api/articles/:article_id', () => {
             })
     })
 })
+describe('GET /api/articles', () => {
+    test('tests the connection to the GET /api/articles endpoint', () => {
+        return request(app)
+            .get('/api/articles')
+            .expect(200)
+            .then(({ body: { articles } }) => {
+                const testArray = [];
+                expect(articles.length).toBe(12);
+                articles.forEach(article =>
+                    testArray.push([article.title, article.topic, article.author, article.votes])
+                )
+                expect(testArray.length).toBe(12);
+            })
+    })
+    test('tests the new comment count property where comments exist', () => {
+        return request(app)
+            .get('/api/articles')
+            .expect(200)
+            .then(({ body: { articles } }) => {
+                const testArray = [];
+                expect(articles.length).toBe(12);
+                articles.forEach(article =>
+                    testArray.push([article.comment_count])
+                )
+                expect(testArray.length).toBe(12);
+            })
+        })
+        test('tests the new sort by created_at descending option where comments exist', () => {
+            return request(app)
+                .get('/api/articles')
+                .expect(200)
+                .then(({ body: { articles } }) => {
+                    const testArray = [];
+                    expect(articles.length).toBe(12);
+                    articles.forEach(article =>
+                        testArray.push([article.created_at])
+                    )
+                    expect(testArray.length).toBe(12);
+                    expect(testArray[0][0]).toBe('2020-11-03T09:12:00.000Z');
+                    expect(testArray[11][0]).toBe('2020-01-07T14:08:00.000Z');
+                })
+            })
+})
 describe('GET /api/users', () => {
     test('tests the connection to the GET /api/users endpoint', () => {
         return request(app)
