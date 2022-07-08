@@ -13,10 +13,10 @@ exports.fetchApi = () => {
             schemaname != 'pg_catalog'
         AND
             schemaname != 'information_schema';
-    `)
-    .catch((error) => {
-        return Promise.reject({ status: 400, message: '400: bad request - invalid data format' });
-    })
+        `)
+        .catch((error) => {
+            return Promise.reject({ status: 400, message: '400: bad request - invalid data format' });
+        })
 };
 
 exports.fetchTopics = () => {
@@ -127,4 +127,16 @@ exports.addsCommentByArticleId = (article_id, entries) => {
             console.log(error)
             return Promise.reject({ status: 400, message: '400: bad request - invalid data format' });
         })
-}
+};
+
+exports.fetchCommentsByArticleId = (article_id) => {
+    return db
+        .query(`
+        SELECT 
+            comment_id, votes, created_at, author, body
+        FROM 
+            comments
+        WHERE 
+            article_id=$1
+        `, [article_id]);
+};

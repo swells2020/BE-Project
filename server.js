@@ -1,5 +1,5 @@
 const express = require('express');
-const { getApi, getTopics, getArticleById, patchArticleById, getUsers, getArticles, postCommentByArticleId } = require('./controllers/controller');
+const { getApi, getTopics, getArticleById, patchArticleById, getUsers, getArticles, getCommentsByArticleId, postCommentByArticleId } = require('./controllers/controller');
 
 const app = express();
 
@@ -10,9 +10,11 @@ app.get('/api', getApi);
 app.get('/api/topics', getTopics);
 
 app.get('/api/articles', getArticles)
+
 app.get('/api/articles/:article_id', getArticleById);
 app.patch('/api/articles/:article_id', patchArticleById);
 
+app.get('/api/articles/:article_id/comments', getCommentsByArticleId);
 
 app.get('/api/users', getUsers);
 
@@ -35,7 +37,6 @@ app.use((error, request, response, next) => {
 
 // 500 error handler
 app.use((error, request, response, next) => {
-    console.log(error, '<500 error')
     response.status(500).send({ message: '500: server error' })
 })
 

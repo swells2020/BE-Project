@@ -31,18 +31,17 @@ exports.checkParametricFormat = (value, column, table) => {
 
 exports.checkExistingValue = (existingValue, existingColumn, existingTable) => {
     const queryString = format(`
-        SELECT
-            %2$s
-        FROM 
-            %3$s
-        WHERE
-            %2$s=%1$L
+    SELECT
+        %2$s
+    FROM 
+        %3$s
+    WHERE
+        %2$s=%1$L
     `, existingValue, existingColumn, existingTable)
-    console.log(queryString)
+
     return db
         .query(queryString)
         .then(({ rows }) => {
-            
             if (rows.length !== 0) {
                 return Promise.resolve();
             } else {
