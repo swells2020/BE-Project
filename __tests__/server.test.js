@@ -79,7 +79,6 @@ describe('GET /api/articles/:article_id', () => {
                 expect(article.body).toEqual(testObject1.body)
                 expect(article.votes).toEqual(testObject1.votes)
             })
-            
     })
     test('tests the new comment count property where comments exist', () => {
         return request(app)
@@ -197,22 +196,22 @@ describe('GET /api/articles', () => {
                 )
                 expect(testArray.length).toBe(12);
             })
-        })
-        test('tests the new sort by created_at descending option where comments exist', () => {
-            return request(app)
-                .get('/api/articles')
-                .expect(200)
-                .then(({ body: { articles } }) => {
-                    const testArray = [];
-                    expect(articles.length).toBe(12);
-                    articles.forEach(article =>
-                        testArray.push([article.created_at])
-                    )
-                    expect(testArray.length).toBe(12);
-                    expect(testArray[0][0]).toBe('2020-11-03T09:12:00.000Z');
-                    expect(testArray[11][0]).toBe('2020-01-07T14:08:00.000Z');
-                })
+    })
+    test('tests the new sort by created_at descending option where comments exist', () => {
+        return request(app)
+            .get('/api/articles')
+            .expect(200)
+            .then(({ body: { articles } }) => {
+                const testArray = [];
+                expect(articles.length).toBe(12);
+                articles.forEach(article =>
+                    testArray.push([article.created_at])
+                )
+                expect(testArray.length).toBe(12);
+                expect(testArray[0][0]).toBe('2020-11-03T09:12:00.000Z');
+                expect(testArray[11][0]).toBe('2020-01-07T14:08:00.000Z');
             })
+    })
 })
 describe('GET /api/users', () => {
     test('tests the connection to the GET /api/users endpoint', () => {
@@ -240,3 +239,53 @@ describe('GET /api/users', () => {
             })
     })
 });
+describe('GET /api/articles/:article_id/comments', () => {
+    test('tests the connection to the GET /api/articles/:article_id/comments endpoint where comments exist', () => {
+        return request(app)
+            .get('/api/articles/1/comments')
+            .expect(200)
+            .then(({ body: { comments } }) => {
+                const erroneousIds = comments.filter(comment => {
+                    comment.article_id !== 1
+                })
+                expect(comments.length).toBe(11);
+                expect(erroneousIds.length).toBe(0);
+                comments.forEach((comment) => {
+                    console.log(typeof comment.created_at)
+                    expect(comment).toEqual(
+                        expect.objectContaining({
+                            comment_id: expect.any(Number),
+                            votes: expect.any(Number),
+                            created_at: expect.any(String),
+                            body: expect.any(String),
+                            author: expect.any(String),
+                        })
+                    );
+                });
+            })
+    })
+    test('tests the connection to the GET /api/articles/:article_id/comments endpoint where no comments exist', () => {
+        return request(app)
+            .get('/api/articles/2/comments')
+            .expect(200)
+            .then(({ body: { comments } }) => {
+                expect(comments.length).toBe(0);
+            })
+    })
+    test('tests the error handling for bad parametric paths', () => {
+        return request(app)
+            .get('/api/articles/13/comments')
+            .expect(404)
+            .then(({ body: { message } }) => {
+                expect(message).toBe('404: parametric endpoint not found');
+            })
+    })
+    test('tests the error handling for bad parametric requests', () => {
+        return request(app)
+            .get('/api/articles/thirteen/comments')
+            .expect(400)
+            .then(({ body: { message } }) => {
+                expect(message).toBe('400: bad request - invalid parametric endpoint format');
+            })
+    })
+})

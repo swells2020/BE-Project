@@ -1,4 +1,4 @@
-const { fetchApi, fetchTopics, fetchArticlesById, updateArticlesById, fetchUsers, fetchArticles } = require("../models/model");
+const { fetchApi, fetchTopics, fetchArticlesById, updateArticlesById, fetchUsers, fetchArticles, fetchCommentsByArticleId } = require("../models/model");
 const { checkParametricFormat, checkRequestBodyFormat } = require("../models/utils");
 
 exports.getApi = (request, response, next) => {
@@ -68,6 +68,21 @@ exports.getUsers = (request, response, next) => {
     fetchUsers().then(({ rows }) => {
         response.send({ users: rows });
     })
+        .catch((error) => {
+            next(error);
+        })
+};
+
+exports.getCommentsByArticleId = (request, response, next) => {
+    const { params: { article_id } } = request
+
+    checkParametricFormat(article_id, 'article_id', 'articles')
+        .then(() => {
+            return fetchCommentsByArticleId(article_id)
+        })
+        .then(({ rows }) => {
+            response.send({ comments: rows })
+        })
         .catch((error) => {
             next(error);
         })
