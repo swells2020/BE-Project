@@ -29,32 +29,24 @@ exports.checkParametricFormat = (value, column, table) => {
         })
 };
 
-exports.checkRequestBodyFormat = (value, entries, table) => {
-    const queryString1 = format(`    
-    SELECT
-        data_type
-    FROM
-        information_schema.columns
-    WHERE
-        table_name = '%2$s'
-    AND 
-        column_name = '%1$s'
-    `, entries[0][0], table);
-
+exports.checkExistingValue = (existingValue, existingColumn, existingTable) => {
+    const queryString = format(`
+        SELECT
+            %2$s
+        FROM 
+            %3$s
+        WHERE
+            %2$s=%1$L
+    `, existingValue, existingColumn, existingTable)
+    console.log(queryString)
     return db
-        .query(queryString1)
+        .query(queryString)
         .then(({ rows }) => {
-            const queryString2 = format(`    
-            SELECT
-                CAST(%1$s as %2$s)
-            `, entries[0][1], rows[0].data_type)
-
-            return db.query(queryString2)
+            
+            if (rows.length !== 0) {
+                return Promise.resolve();
+            } else {
+                return Promise.reject({ status: 400, message: '400: bad request - invalid data format' })
+            }
         })
-        .then(() => {
-            return Promise.resolve();
-        })
-        .catch((error) => {
-            return Promise.reject({ status: 400, message: '400: bad request - invalid data format' });
-        })
-};
+}

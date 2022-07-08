@@ -1,5 +1,6 @@
-const { fetchApi, fetchTopics, fetchArticlesById, updateArticlesById, fetchUsers, fetchArticles } = require("../models/model");
-const { checkParametricFormat, checkRequestBodyFormat } = require("../models/utils");
+const users = require("../db/data/test-data/users");
+const { fetchApi, fetchTopics, fetchArticlesById, updateArticlesById, fetchUsers, fetchArticles, addsCommentByArticleId } = require("../models/model");
+const { checkParametricFormat, checkExistingValue } = require("../models/utils");
 
 exports.getApi = (request, response, next) => {
     fetchApi()
@@ -41,13 +42,10 @@ exports.patchArticleById = (request, response, next) => {
 
     checkParametricFormat(article_id, 'article_id', 'articles')
         .then(() => {
-            return checkRequestBodyFormat(article_id, entries, 'articles')
+            return updateArticlesById(article_id, entries)
         })
-        .then(() => {
-            return updateArticlesById(article_id, entries, 'articles')
-        })
-        .then((result) => {
-            response.send({ article: result.rows[0] })
+        .then(({rows}) => {
+            response.send({ article: rows[0] })
         })
         .catch((error) => {
             next(error);
@@ -68,6 +66,31 @@ exports.getUsers = (request, response, next) => {
     fetchUsers().then(({ rows }) => {
         response.send({ users: rows });
     })
+        .catch((error) => {
+            next(error);
+        })
+};
+
+exports.postCommentByArticleId = (request, response, next) => {
+    const { params: { article_id }, body } = request
+
+    if(body.username) {
+        body.author = body.username
+        delete body.username
+    }
+
+    const entries = Object.entries(body);
+
+    checkParametricFormat(article_id, 'article_id', 'articles')
+        .then(() => {
+            return checkExistingValue(body.author, 'username', 'users')
+        })
+        .then(() => {
+            return addsCommentByArticleId(article_id, entries)
+        })
+        .then(({ rows }) => {
+            response.status(201).send({ comment: rows })
+        })
         .catch((error) => {
             next(error);
         })

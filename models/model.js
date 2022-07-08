@@ -1,5 +1,6 @@
 const format = require('pg-format')
 const db = require('../db/connection');
+const { entries } = require('../db/data/test-data/articles');
 
 exports.fetchApi = () => {
     return db
@@ -13,6 +14,9 @@ exports.fetchApi = () => {
         AND
             schemaname != 'information_schema';
     `)
+    .catch((error) => {
+        return Promise.reject({ status: 400, message: '400: bad request - invalid data format' });
+    })
 };
 
 exports.fetchTopics = () => {
@@ -23,6 +27,9 @@ exports.fetchTopics = () => {
         FROM
             topics;
         `)
+        .catch((error) => {
+            return Promise.reject({ status: 400, message: '400: bad request - invalid data format' });
+        })
 };
 
 exports.fetchArticlesById = (article_id) => {
@@ -38,7 +45,10 @@ exports.fetchArticlesById = (article_id) => {
             articles.article_id=$1
         GROUP BY
             articles.article_id
-        `, [article_id]);
+        `, [article_id])
+        .catch((error) => {
+            return Promise.reject({ status: 400, message: '400: bad request - invalid data format' });
+        })
 };
 
 exports.fetchUsers = () => {
@@ -49,6 +59,9 @@ exports.fetchUsers = () => {
         FROM
             users;
         `)
+        .catch((error) => {
+            return Promise.reject({ status: 400, message: '400: bad request - invalid data format' });
+        })
 };
 
 exports.updateArticlesById = (article_id, entries) => {
@@ -66,6 +79,9 @@ exports.updateArticlesById = (article_id, entries) => {
     `, keys, values, article_id)
     return db
         .query(queryString)
+        .catch((error) => {
+            return Promise.reject({ status: 400, message: '400: bad request - invalid data format' });
+        })
 
 }
 
@@ -83,4 +99,32 @@ exports.fetchArticles = () => {
         ORDER BY
             articles.created_at DESC
         `)
+        .catch((error) => {
+            return Promise.reject({ status: 400, message: '400: bad request - invalid data format' });
+        })
 };
+
+exports.addsCommentByArticleId = (article_id, entries) => {
+    const keys = Object.keys(Object.fromEntries(entries));
+    const values = Object.values(Object.fromEntries(entries));
+
+    keys.push('article_id');
+    values.push(article_id);
+
+    
+    const queryString = format(`
+    INSERT INTO
+    comments(%1$s)
+    VALUES
+    (%2$L)
+    RETURNING
+        *
+    `, keys, values)
+    
+    return db
+        .query(queryString)
+        .catch((error) => {
+            console.log(error)
+            return Promise.reject({ status: 400, message: '400: bad request - invalid data format' });
+        })
+}

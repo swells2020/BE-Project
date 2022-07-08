@@ -239,4 +239,67 @@ describe('GET /api/users', () => {
                 expect(testArray[3].includes('https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png')).toBe(true)
             })
     })
-});
+})
+describe('POST /api/articles/:article_id/comments', () => {
+    test('tests the connection to the POST /api/articles/:article_id/comments endpoint', () => {
+        const postData = {
+            username: 'butter_bridge',
+            body: 'This is a test post.'
+        }
+        
+        return request(app)
+            .post('/api/articles/1/comments')
+            .send(postData)
+            .expect(201)
+            .then(({body: {comment}}) => {
+                expect(comment[0].comment_id).toBe(19);
+                expect(comment[0].author).toBe('butter_bridge');
+                expect(comment[0].body).toBe('This is a test post.');
+                expect(comment[0].votes).toBe(0);
+            })
+    })
+    test('tests the error handling for a bad request body (invalid value)', () => {
+        const postData = {
+            username: 'butter_smidge',
+            body: 'This is a test post.'
+        }
+        
+        return request(app)
+            .post('/api/articles/1/comments')
+            .send(postData)
+            .expect(400)
+            .then(({ body: { message } }) => {
+                expect(message).toBe('400: bad request - invalid data format');
+            })
+    })
+    test('tests the error handling for a bad request body (invalid value)', () => {
+        const postData = {
+            uzername: 'butter_bridge',
+            body: 'This is a test post.'
+        }
+        
+        return request(app)
+            .post('/api/articles/1/comments')
+            .send(postData)
+            .expect(400)
+            .then(({ body: { message } }) => {
+                expect(message).toBe('400: bad request - invalid data format');
+            })
+    })
+    test('tests the error handling for bad parametric paths', () => {
+        return request(app)
+            .post('/api/articles/13/comments')
+            .expect(404)
+            .then(({ body: { message } }) => {
+                expect(message).toBe('404: parametric endpoint not found');
+            })
+    })
+    test('tests the error handling for bad parametric requests', () => {
+        return request(app)
+            .post('/api/articles/thirteen/comments')
+            .expect(400)
+            .then(({ body: { message } }) => {
+                expect(message).toBe('400: bad request - invalid parametric endpoint format');
+            })
+    })
+})

@@ -1,5 +1,5 @@
 const express = require('express');
-const { getApi, getTopics, getArticleById, patchArticleById, getUsers, getArticles } = require('./controllers/controller');
+const { getApi, getTopics, getArticleById, patchArticleById, getUsers, getArticles, postCommentByArticleId } = require('./controllers/controller');
 
 const app = express();
 
@@ -15,6 +15,8 @@ app.patch('/api/articles/:article_id', patchArticleById);
 
 
 app.get('/api/users', getUsers);
+
+app.post('/api/articles/:article_id/comments', postCommentByArticleId)
 
 // Bad path error handler
 app.use('*', (request, response) => {
@@ -33,6 +35,7 @@ app.use((error, request, response, next) => {
 
 // 500 error handler
 app.use((error, request, response, next) => {
+    console.log(error, '<500 error')
     response.status(500).send({ message: '500: server error' })
 })
 
