@@ -89,7 +89,7 @@ exports.fetchArticles = () => {
     return db
         .query(`
         SELECT 
-            articles.title, articles.topic, articles.author, articles.created_at, articles.votes, COUNT(comment_id) AS comment_count
+            articles.article_id, articles.title, articles.topic, articles.author, articles.created_at, articles.votes, COUNT(comment_id) AS comment_count
         FROM 
             articles
         LEFT JOIN
