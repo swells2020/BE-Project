@@ -245,12 +245,12 @@ describe('POST /api/articles/:article_id/comments', () => {
             username: 'butter_bridge',
             body: 'This is a test post.'
         }
-        
+
         return request(app)
             .post('/api/articles/1/comments')
             .send(postData)
             .expect(201)
-            .then(({body: {comment}}) => {
+            .then(({ body: { comment } }) => {
                 expect(comment[0].comment_id).toBe(19);
                 expect(comment[0].author).toBe('butter_bridge');
                 expect(comment[0].body).toBe('This is a test post.');
@@ -262,7 +262,7 @@ describe('POST /api/articles/:article_id/comments', () => {
             username: 'butter_smidge',
             body: 'This is a test post.'
         }
-        
+
         return request(app)
             .post('/api/articles/1/comments')
             .send(postData)
@@ -276,7 +276,7 @@ describe('POST /api/articles/:article_id/comments', () => {
             uzername: 'butter_bridge',
             body: 'This is a test post.'
         }
-        
+
         return request(app)
             .post('/api/articles/1/comments')
             .send(postData)
@@ -348,6 +348,138 @@ describe('GET /api/articles/:article_id/comments', () => {
             .expect(400)
             .then(({ body: { message } }) => {
                 expect(message).toBe('400: bad request - invalid parametric endpoint format');
+            })
+    })
+})
+describe('GET /api/articles?queries', () => {
+    describe('tests the connection to the GET /api/articles(queries) endpoint with the following queries:', () => {
+        test('sort_by=title', () => {
+            return request(app)
+                .get('/api/articles?sort_by=title')
+                .expect(200)
+                .then(({ body: { articles } }) => {
+                    expect(articles[0].title).toBe('Z');
+                    expect(articles[11].title).toBe('A');
+                })
+        })
+        test('sort_by=topic', () => {
+            return request(app)
+                .get('/api/articles?sort_by=topic')
+                .expect(200)
+                .then(({ body: { articles } }) => {
+                    expect(articles[0].topic).toBe('mitch');
+                    expect(articles[11].topic).toBe('cats');
+                })
+        })
+        test('sort_by=author', () => {
+            return request(app)
+                .get('/api/articles?sort_by=author')
+                .expect(200)
+                .then(({ body: { articles } }) => {
+                    expect(articles[0].author).toBe('rogersop');
+                    expect(articles[11].author).toBe('butter_bridge');
+                })
+        })
+        test('sort_by=created_at', () => {
+            return request(app)
+                .get('/api/articles?sort_by=created_at')
+                .expect(200)
+                .then(({ body: { articles } }) => {
+                    expect(articles[0].article_id).toBe(3);
+                    expect(articles[11].article_id).toBe(7);
+                })
+        })
+        test('sort_by=votes', () => {
+            return request(app)
+                .get('/api/articles?sort_by=votes')
+                .expect(200)
+                .then(({ body: { articles } }) => {
+                    expect(articles[0].title).toBe('Living in the shadow of a great man');
+                })
+        })
+        test('sort_by=title&order=asc', () => {
+            return request(app)
+                .get('/api/articles?sort_by=title&order=asc')
+                .expect(200)
+                .then(({ body: { articles } }) => {
+                    expect(articles[0].title).toBe('A');
+                    expect(articles[11].title).toBe('Z');
+                })
+        })
+        test('sort_by=topic&order=asc', () => {
+            return request(app)
+                .get('/api/articles?sort_by=topic&order=asc')
+                .expect(200)
+                .then(({ body: { articles } }) => {
+                    expect(articles[0].topic).toBe('cats');
+                    expect(articles[11].topic).toBe('mitch');
+                })
+        })
+        test('sort_by=author&order=asc', () => {
+            return request(app)
+                .get('/api/articles?sort_by=author&order=asc')
+                .expect(200)
+                .then(({ body: { articles } }) => {
+                    expect(articles[0].author).toBe('butter_bridge');
+                    expect(articles[11].author).toBe('rogersop');
+                })
+        })
+        test('sort_by=created_at&order=asc', () => {
+            return request(app)
+                .get('/api/articles?sort_by=created_at&order=asc')
+                .expect(200)
+                .then(({ body: { articles } }) => {
+                    expect(articles[0].article_id).toBe(7);
+                    expect(articles[11].article_id).toBe(3);
+                })
+        })
+        test('sort_by=votes&order=asc', () => {
+            return request(app)
+                .get('/api/articles?sort_by=votes&order=asc')
+                .expect(200)
+                .then(({ body: { articles } }) => {
+                    expect(articles[0].title).not.toBe('Living in the shadow of a great man');
+                })
+        })
+        test('topic=cats', () => {
+            return request(app)
+                .get('/api/articles?topic=cats')
+                .expect(200)
+                .then(({ body: { articles } }) => {
+                    const articleIds = articles.map(article => {
+                        return article.article_id
+                    })
+                    expect(articles.length).toBe(1);
+                    expect(articleIds.includes(5)).toBe(true);
+                })
+        })
+        test('topic=mitch', () => {
+            return request(app)
+                .get('/api/articles?topic=mitch')
+                .expect(200)
+                .then(({ body: { articles } }) => {
+                    const articleIds = articles.map(article => {
+                        return article.article_id
+                    })
+                    expect(articles.length).toBe(11);
+                    expect(articleIds.includes(5)).toBe(false);
+                })
+        })
+    })
+    test('tests the error handling for bad queries', () => {
+        return request(app)
+            .get('/api/articles?author=grumpy19')
+            .expect(400)
+            .then(({ body: { message } }) => {
+                expect(message).toBe('400: bad request - invalid query');
+            })
+    })    
+    test('tests the error handling for 0 responses', () => {
+        return request(app)
+            .get('/api/articles?topic=grumpy19')
+            .expect(200)
+            .then(({ body: { articles} }) => {
+                expect(articles.length).toBe(0);
             })
     })
 })

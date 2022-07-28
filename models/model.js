@@ -111,16 +111,15 @@ exports.addsCommentByArticleId = (article_id, entries) => {
     keys.push('article_id');
     values.push(article_id);
 
-    
     const queryString = format(`
-    INSERT INTO
-    comments(%1$s)
-    VALUES
-    (%2$L)
-    RETURNING
-        *
+        INSERT INTO
+            comments(%1$s)
+        VALUES
+            (%2$L)
+        RETURNING
+            *
     `, keys, values)
-    
+
     return db
         .query(queryString)
         .catch((error) => {
@@ -139,4 +138,46 @@ exports.fetchCommentsByArticleId = (article_id) => {
         WHERE 
             article_id=$1
         `, [article_id]);
+};
+
+exports.fetchArticlesWithQueries = (query) => {
+    const sortBy = query.sort_by !== undefined ? `articles.${query.sort_by}` : 'articles.created_at';
+    const sortOrder = query.order !== undefined ? query.order.toUpperCase() : 'DESC';
+    const orderBy = `${sortBy} ${sortOrder}`;
+
+    const queryStringWithFilter = format(`
+        SELECT 
+            articles.article_id, articles.title, articles.topic, articles.author, articles.created_at, articles.votes, COUNT(comment_id) AS comment_count
+        FROM 
+            articles
+        LEFT JOIN
+            comments ON comments.article_id=articles.article_id
+        WHERE
+            articles.topic=%1$L
+        GROUP BY
+            articles.article_id 
+        ORDER BY
+            %2$s
+        `, query.topic, orderBy)
+
+    const queryStringWithoutFilter = format(`
+        SELECT 
+            articles.article_id, articles.title, articles.topic, articles.author, articles.created_at, articles.votes, COUNT(comment_id) AS comment_count
+        FROM 
+            articles
+        LEFT JOIN
+            comments ON comments.article_id=articles.article_id
+        GROUP BY
+            articles.article_id 
+        ORDER BY
+            %1$s
+        `, orderBy)
+
+    const queryString = query.topic !== undefined ? queryStringWithFilter : queryStringWithoutFilter
+
+return db
+    .query(queryString)
+    .catch((error) => {
+        return Promise.reject({ status: 400, message: '400: bad request - invalid data format' });
+    })
 };

@@ -1,5 +1,5 @@
 const users = require("../db/data/test-data/users");
-const { fetchApi, fetchTopics, fetchArticlesById, updateArticlesById, fetchUsers, fetchArticles, fetchCommentsByArticleId, addsCommentByArticleId } = require("../models/model");
+const { fetchApi, fetchTopics, fetchArticlesById, updateArticlesById, fetchUsers, fetchArticles, fetchCommentsByArticleId, addsCommentByArticleId, fetchArticlesWithQueries } = require("../models/model");
 const { checkParametricFormat, checkExistingValue } = require("../models/utils");
 
 exports.getApi = (request, response, next) => {
@@ -54,13 +54,44 @@ exports.patchArticleById = (request, response, next) => {
 };
 
 exports.getArticles = (request, response, next) => {
-    fetchArticles()
-        .then(({ rows }) => {
-            response.send({ articles: rows });
+    const { query } = request;
+
+    
+
+    if (Object.keys(query).length !== 0) {
+        const validQueryArray = Object.keys(query).map(key => {
+        return key === 'topic' || key === 'order' || key === 'sort_by'
         })
-        .catch((error) => {
-            next(error);
-        })
+
+        let validQuery = false;
+
+        if (validQueryArray.includes(false)) {
+            validQuery = false
+        } else {
+            validQuery = true
+        }
+
+        if (validQuery) {
+            fetchArticlesWithQueries(query)
+            .then(({ rows }) => {
+                response.send({ articles: rows });
+            })
+            .catch((error) => {
+                next(error);
+            })
+        } else {
+            next({ status: 400, message: '400: bad request - invalid query' });
+        }
+
+    } else {
+        fetchArticles()
+            .then(({ rows }) => {
+                response.send({ articles: rows });
+            })
+            .catch((error) => {
+                next(error);
+            })
+    }
 };
 
 exports.getUsers = (request, response, next) => {

@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const { getApi, getTopics, getArticleById, patchArticleById, getUsers, getArticles, getCommentsByArticleId, postCommentByArticleId } = require('./controllers/controller');
+const { getApi, getTopics, getArticleById, patchArticleById, getUsers, getArticles, getCommentsByArticleId, postCommentByArticleId, getArticlesWithQueries } = require('./controllers/controller');
 
 const app = express();
 
